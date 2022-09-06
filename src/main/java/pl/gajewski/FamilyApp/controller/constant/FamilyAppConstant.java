@@ -8,5 +8,7 @@ public class FamilyAppConstant {
 
     // Informations
     public static final String PASS_INFORMATION = "Dodano nową rodzinę ";
+    public static final String VALLIDATE_PASS_INFORMATION = "Dodano nową rodzinę ";
     public static final String FAULT_INFORMATION = "Błędnie podano ilość członków rodziny w poszczególnych przedziałach wiekowych";
+    public static final String FAMILY_MEMBER_ID_IS_NULL = "Nie zapisano członków rodziny, FamilyID ma wartość null";
 }

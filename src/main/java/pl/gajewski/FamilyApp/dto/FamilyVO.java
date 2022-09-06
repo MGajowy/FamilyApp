@@ -1,9 +1,6 @@
 package pl.gajewski.FamilyApp.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class FamilyVO {
+    private Long id;
     private String familyName;
     private Integer nrOfAdults;
     private Integer nrOfChildren;

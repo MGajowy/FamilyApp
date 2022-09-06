@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class CreateFamilyResponse {
-    private String numberFamily;
+    private Long numberFamily;
     private String information;
 }

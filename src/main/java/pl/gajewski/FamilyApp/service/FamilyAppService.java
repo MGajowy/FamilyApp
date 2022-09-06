@@ -3,7 +3,6 @@ package pl.gajewski.FamilyApp.service;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.gajewski.FamilyApp.controller.constant.FamilyAppConstant;
@@ -15,17 +14,11 @@ import java.util.UUID;
 @Service
 @Log4j2
 public class FamilyAppService {
-    @Value("${service.uriCreateFamily}")
-    private String uriCreateFamily;
 
-    @Value("${service.uriCreateFamilyMember}")
-    private String uriCreateFamilyMember;
-
-    @Value("${service.uriSearchFamilyOfId}")
-    private String uriSearchFamilyOfId;
-
-    @Value("${service.uriSearchFamilyMemberOfId}")
-    private String uriSearchFamilyMemberOfId;
+    private static final String URI_CREATE_FAMILY = "http://localhost:8022/db/createFamily";
+    private static final String URI_CREATE_FAMILY_MEMBER = "http://localhost:8021/createFamilyMember";
+    private static final String URI_SEARCH_FAMILY_OF_ID = "http://localhost:8022/db/searchFamily/";
+    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://localhost:8021/searchFamilyMember/";
 
     private final RestTemplate restTemplate;
 
@@ -42,13 +35,14 @@ public class FamilyAppService {
             Family family = new Family();
             BeanUtils.copyProperties(request, family);
             family.setUuidFamily(uuidFamily);
-            Long familyID = restTemplate.postForObject(uriCreateFamily, family, Long.class);
+            Long familyID = restTemplate.postForObject(URI_CREATE_FAMILY, family, Long.class);
             for (FamilyMember familyMember : request.getFamilyMemberList()) {
                 familyMember.setFamilyId(familyID);
-                restTemplate.postForObject(uriCreateFamilyMember, familyMember, FamilyMember.class);
+                restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, FamilyMember.class);
             }
+            log.info(FamilyAppConstant.PASS_INFORMATION);
             return CreateFamilyResponse.builder()
-                    .numberFamily(familyID.toString())
+                    .numberFamily(familyID)
                     .information(FamilyAppConstant.PASS_INFORMATION)
                     .build();
         }
@@ -78,7 +72,6 @@ public class FamilyAppService {
         if (request.getNrOfAdults().equals(adults) &&
                 request.getNrOfChildren().equals(childerns) &&
                 request.getNrOfinfants().equals(inflants)) {
-            log.info(FamilyAppConstant.PASS_INFORMATION + request.getFamilyName());
             return true;
         } else {
             log.warn("Błąd walidacji: " + FamilyAppConstant.FAULT_INFORMATION);
@@ -87,8 +80,8 @@ public class FamilyAppService {
     }
 
     public FamilyResponse getFamily(Long id) {
-        Family responsFamily = restTemplate.getForObject(uriSearchFamilyOfId + id.toString(), Family.class);
-        FamilyMemberResponse[] listResponseFamily = restTemplate.getForObject(uriSearchFamilyMemberOfId + id.toString(), FamilyMemberResponse[].class);
+        Family responsFamily = restTemplate.getForObject(URI_SEARCH_FAMILY_OF_ID + id.toString(), Family.class);
+        FamilyMemberResponse[] listResponseFamily = restTemplate.getForObject(URI_SEARCH_FAMILY_MEMBER_OF_ID + id.toString(), FamilyMemberResponse[].class);
         return FamilyResponse.builder()
                 .familyName(responsFamily.getFamilyName())
                 .nrOfAdults(responsFamily.getNrOfAdults())
