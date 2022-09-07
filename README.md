@@ -3,32 +3,33 @@
 ### INSTRUKCJA ###
 
 1. Informacje techniczne :
-- baza danych postgres 9.6
+- docker
+- baza danych PostgreSQL 9.6
 - java 11
 
-2. Budowa i uruchomienie obrazu docker:
-    1. Dla każdej aplikacji (FamilyApp, FamilyMemberApp, FamilyDatabase) uruchom polecenie
-     mvn clean install
-    2. Dla każdego pobranego repozytorium (w scieżce repozytorium) wykonaj polecenia budowy image i uruchomienia
+2. Budowa i uruchomienie obrazów docker:
+    1. Dla każdego pobranego repozytorium aplikacji (FamilyApp, FamilyMemberApp, FamilyDatabase) uruchom w terminalu
+    polecenie :  mvn clean install
+    2. Baza danych POSTGRES - docker image
+        Pobierz kontener docker z postgresem v 9.6:
+        $ docker pull postgres:9.6
+    3. Dla każdego pobranego repozytorium (w scieżce repozytorium) wykonaj polecenia budowy image i uruchomienia
      poszczególnych kontenerów dockera :
-    FamilyApp:
+    /FamilyApp:
         $ docker build . -t family-app
         $ docker run -p 8020:8020 family-app
-    FamilyApp:
+    /FamilyMemberApp:
          $ docker build . -t family-member-app
          $ docker run -p 8021:8021 family-member-app
-     FamilyApp:
-          $ docker build . -t family-database
-          $ docker run -p 8022:8022 family-database
-3. POSTGRES  - docker image
-    1. Pobierz kontener docker z postgresem v 9.6
-    $ docker pull postgres:9.6
+     /FamilyDatabase:
+          $ docker compose up
 
-    2. Uruchom kontener postgresa :
-    $  docker run  --name postgres-DB -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres
+UWAGI:  Jeśli podczas urachamiania obrazu FamilyDatabase wpadnie błąd "Connection refuse", proszę spróbować
+        uruchomić aplikacje (FamilyApp, FamilyMemberApp, FamilyDatabase) w IDE z uruchomionym kontenerem postgres:9.6.
+
 ---------------------------------------------------------------------
 
-# PRZYKLADOWE WYWOALANIA USLUG DLA POSTMAN:
+### PRZYKLADOWE WYWOALANIA USLUG DLA POSTMAN ####
 ------------------------------
 POST -  createFamily
 ------------------------------
