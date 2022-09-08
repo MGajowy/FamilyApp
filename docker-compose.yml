@@ -1,0 +1,42 @@
+
+version: '3.8'
+services:
+  app:
+    container_name: family-app
+    image: family-app
+    build: ./
+    ports:
+      - "8020:8020"
+    depends_on:
+      - family-database
+      - family-member-app
+      - postgresqldb
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+  postgresqldb:
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+  family-database:
+    image: family-database
+    ports:
+      - "8022:8022"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresqldb:5432/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+  family-member-app:
+    image: family-member-app
+    ports:
+      - "8021:8021"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres

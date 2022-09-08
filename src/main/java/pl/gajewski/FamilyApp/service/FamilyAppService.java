@@ -15,10 +15,10 @@ import java.util.UUID;
 @Log4j2
 public class FamilyAppService {
 
-    private static final String URI_CREATE_FAMILY = "http://localhost:8022/db/createFamily";
-    private static final String URI_CREATE_FAMILY_MEMBER = "http://localhost:8021/createFamilyMember";
-    private static final String URI_SEARCH_FAMILY_OF_ID = "http://localhost:8022/db/searchFamily/";
-    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://localhost:8021/searchFamilyMember/";
+    private static final String URI_CREATE_FAMILY = "http://familyapp-family-database-1:8022/db/createFamily";
+    private static final String URI_CREATE_FAMILY_MEMBER = "http://familyapp-family-member-app-1:8021/createFamilyMember";
+    private static final String URI_SEARCH_FAMILY_OF_ID = "http://familyapp-family-database-1:8022/db/searchFamily/";
+    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://familyapp-family-member-app-1:8021/searchFamilyMember/";
 
     private final RestTemplate restTemplate;
 

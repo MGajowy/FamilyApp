@@ -10,22 +10,15 @@
 2. Budowa i uruchomienie obrazów docker:
     1. Dla każdego pobranego repozytorium aplikacji (FamilyApp, FamilyMemberApp, FamilyDatabase) uruchom w terminalu
     polecenie :  mvn clean install
-    2. Baza danych POSTGRES - docker image
-        Pobierz kontener docker z postgresem v 9.6:
-        $ docker pull postgres:9.6
-    3. Dla każdego pobranego repozytorium (w scieżce repozytorium) wykonaj polecenia budowy image i uruchomienia
-     poszczególnych kontenerów dockera :
-    /FamilyApp:
-        $ docker build . -t family-app
-        $ docker run -p 8020:8020 family-app
-    /FamilyMemberApp:
-         $ docker build . -t family-member-app
-         $ docker run -p 8021:8021 family-member-app
-     /FamilyDatabase:
-          $ docker compose up
 
-UWAGI: Jeśli podczas uruchomienia usługi createFamily wystąpi, błąd proszę
-       uruchomić aplikacje (FamilyApp, FamilyMemberApp) w IDE z uruchomionym kontenerem postgres:9.6.
+    2. Dla poszegolnych repozytoriow (w scieżce repozytorium) wykonaj polecenia budowy:
+    /FamilyMemberApp:
+          docker build . -t family-member-app
+     /FamilyDatabase:
+          docker build . -t family-database
+     3. Uruchom terminal w /FamilyApp i wykonaj:
+          docker compose up
+     4. Przetestuj działanie aplikacji poniższymi przykładami
 
 ---------------------------------------------------------------------
 

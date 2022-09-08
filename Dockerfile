@@ -1,5 +1,5 @@
 FROM openjdk:11
 
-COPY target/FamilyApp-*.jar /FamilyApp.jar
+COPY target/FamilyApp-*.jar app.jar
 
-CMD ["java" , "-jar" , "/FamilyApp.jar" ]
+CMD ["java" , "-jar" , "app.jar" ]
