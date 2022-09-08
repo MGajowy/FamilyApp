@@ -24,8 +24,8 @@
      /FamilyDatabase:
           $ docker compose up
 
-UWAGI:  Jeśli podczas urachamiania obrazu FamilyDatabase wpadnie błąd "Connection refuse", proszę spróbować
-        uruchomić aplikacje (FamilyApp, FamilyMemberApp, FamilyDatabase) w IDE z uruchomionym kontenerem postgres:9.6.
+UWAGI: Jeśli podczas uruchomienia usługi createFamily wystąpi, błąd proszę
+       uruchomić aplikacje (FamilyApp, FamilyMemberApp) w IDE z uruchomionym kontenerem postgres:9.6.
 
 ---------------------------------------------------------------------
 
