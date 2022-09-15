@@ -3,6 +3,8 @@ package pl.gajewski.FamilyApp.service;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.gajewski.FamilyApp.controller.constant.FamilyAppConstant;
@@ -38,7 +40,14 @@ public class FamilyAppService {
             Long familyID = restTemplate.postForObject(URI_CREATE_FAMILY, family, Long.class);
             for (FamilyMember familyMember : request.getFamilyMemberList()) {
                 familyMember.setFamilyId(familyID);
-                restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, FamilyMember.class);
+                ResponseEntity<HttpStatus> response = restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, ResponseEntity.class);
+                if (response.equals(new ResponseEntity<>(HttpStatus.NO_CONTENT))) {
+                    log.error(FamilyAppConstant.FAIL_CREATE_MEMBER_FAMILY + familyMember.getGivenName() + " " + familyMember.getFamilyName());
+                    return CreateFamilyResponse.builder()
+                            .numberFamily(null)
+                            .information(FamilyAppConstant.FAIL_CREATE_MEMBER_FAMILY + familyMember.getGivenName())
+                            .build();
+                }
             }
             log.info(FamilyAppConstant.PASS_INFORMATION);
             return CreateFamilyResponse.builder()
@@ -69,12 +78,11 @@ public class FamilyAppService {
     }
 
     private Boolean checkFamily(FamilyVO request, Integer adults, Integer childerns, Integer inflants) {
-        if (request.getNrOfAdults().equals(adults) &&
-                request.getNrOfChildren().equals(childerns) &&
+        if (request.getNrOfAdults().equals(adults) && request.getNrOfChildren().equals(childerns) &&
                 request.getNrOfinfants().equals(inflants)) {
             return true;
         } else {
-            log.warn("Błąd walidacji: " + FamilyAppConstant.FAULT_INFORMATION);
+            log.warn("Błąd walidacji w metodzie validateFamilyData(): " + FamilyAppConstant.FAULT_INFORMATION);
             return false;
         }
     }

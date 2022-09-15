@@ -9,7 +9,7 @@
 
 2. Budowa i uruchomienie obrazów docker:
     1. Dla każdego pobranego repozytorium aplikacji (FamilyApp, FamilyMemberApp, FamilyDatabase) uruchom w terminalu
-    polecenie :  mvn clean install
+    polecenie : mvn clean install
 
     2. Dla poszegolnych repozytoriow (w scieżce repozytorium) wykonaj polecenia budowy:
     /FamilyMemberApp:
