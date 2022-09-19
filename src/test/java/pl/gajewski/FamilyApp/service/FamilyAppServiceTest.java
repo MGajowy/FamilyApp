@@ -1,5 +1,6 @@
 package pl.gajewski.FamilyApp.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -8,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import pl.gajewski.FamilyApp.controller.constant.FamilyAppConstant;
 import pl.gajewski.FamilyApp.dto.*;
@@ -16,27 +18,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FamilyAppServiceTest {
-    private static final String URI_CREATE_FAMILY = "http://family-database-app:8022/db/createFamily";
-    private static final String URI_CREATE_FAMILY_MEMBER = "http://family-member-app:8021/createFamilyMember";
-    private static final String URI_SEARCH_FAMILY_OF_ID = "http://family-database-app:8022/db/searchFamily/1";
-    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://family-member-app:8021/searchFamilyMember/1";
 
     @Mock
     RestTemplate restTemplate;
     @Mock
-    ResponseEntity response;
+    ResponseEntity<?> response;
     @InjectMocks
     FamilyAppService familyAppService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(familyAppService, "uriCreateFamily", "http://family-database-app:8022/db/createFamily");
+        ReflectionTestUtils.setField(familyAppService, "uriCreateMemberFamily", "http://family-member-app:8021/createFamilyMember");
+        ReflectionTestUtils.setField(familyAppService, "uriSearchFamilyOfId", "http://family-database-app:8022/db/searchFamily/1");
+        ReflectionTestUtils.setField(familyAppService, "uriSearchFamilyMemberOfId", "http://family-member-app:8021/searchFamilyMember/1");
+    }
 
     @Test
     void shouldCreateFamily() {
         //when
-        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
-        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY_MEMBER), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
+        when(restTemplate.postForObject(anyString(), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
+        when(restTemplate.postForObject(anyString(), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         CreateFamilyResponse actual = familyAppService.createFamily(FamilyVO.builder()
                 .id(1L)
                 .familyMemberList(createFamilyMember())
@@ -55,8 +62,8 @@ class FamilyAppServiceTest {
         //given
         List<FamilyMember> list = createFamilyMember();
         //when
-        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
-        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY_MEMBER), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        when(restTemplate.postForObject(anyString(), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
+        when(restTemplate.postForObject(anyString(), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
         CreateFamilyResponse actual = familyAppService.createFamily(FamilyVO.builder()
                 .id(1L)
                 .familyMemberList(list)
@@ -87,8 +94,8 @@ class FamilyAppServiceTest {
     @Test
     void shouldGetFamily() {
         // given
-        when(restTemplate.getForObject(Mockito.eq(URI_SEARCH_FAMILY_OF_ID), Mockito.eq(Family.class))).thenReturn(createFamily());
-        when(restTemplate.getForObject(Mockito.eq(URI_SEARCH_FAMILY_MEMBER_OF_ID), Mockito.eq(FamilyMemberResponse[].class))).thenReturn(createFamilyMemberTab());
+        when(restTemplate.getForObject(anyString(), Mockito.eq(Family.class))).thenReturn(createFamily());
+        when(restTemplate.getForObject(anyString(), Mockito.eq(FamilyMemberResponse[].class))).thenReturn(createFamilyMemberTab());
         // when
         FamilyResponse actual = familyAppService.getFamily(1L);
         // then

@@ -1,8 +1,10 @@
 package pl.gajewski.FamilyApp.service;
 
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,17 @@ import java.util.UUID;
 @Log4j2
 public class FamilyAppService {
 
-    private static final String URI_CREATE_FAMILY = "http://family-database-app:8022/db/createFamily";
-    private static final String URI_CREATE_FAMILY_MEMBER = "http://family-member-app:8021/createFamilyMember";
-    private static final String URI_SEARCH_FAMILY_OF_ID = "http://family-database-app:8022/db/searchFamily/";
-    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://family-member-app:8021/searchFamilyMember/";
+    @Value("${familyAppService.uriCreateFamily}")
+    private String uriCreateFamily;
+
+    @Value("${familyAppService.uriCreateFamilyMember}")
+    private String uriCreateMemberFamily;
+
+    @Value("${familyAppService.uriSearchFamilyOfId}")
+    private String uriSearchFamilyOfId;
+
+    @Value("${familyAppService.uriSearchFamilyMemberOfId}")
+    private String uriSearchFamilyMemberOfId;
 
     private final RestTemplate restTemplate;
 
@@ -37,10 +46,10 @@ public class FamilyAppService {
             Family family = new Family();
             BeanUtils.copyProperties(request, family);
             family.setUuidFamily(uuidFamily);
-            Long familyID = restTemplate.postForObject(URI_CREATE_FAMILY, family, Long.class);
+            Long familyID = restTemplate.postForObject(uriCreateFamily, family, Long.class);
             for (FamilyMember familyMember : request.getFamilyMemberList()) {
                 familyMember.setFamilyId(familyID);
-                ResponseEntity response = restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, ResponseEntity.class);
+                ResponseEntity response = restTemplate.postForObject(uriCreateMemberFamily, familyMember, ResponseEntity.class);
                 if (response != null && response.equals(new ResponseEntity<>(HttpStatus.NO_CONTENT))) {
                     log.error(FamilyAppConstant.FAIL_CREATE_MEMBER_FAMILY + familyMember.getGivenName() + " " + familyMember.getFamilyName());
                     return CreateFamilyResponse.builder()
@@ -88,8 +97,8 @@ public class FamilyAppService {
     }
 
     public FamilyResponse getFamily(Long id) {
-        Family responsFamily = restTemplate.getForObject(URI_SEARCH_FAMILY_OF_ID + id.toString(), Family.class);
-        FamilyMemberResponse[] listResponseFamily = restTemplate.getForObject(URI_SEARCH_FAMILY_MEMBER_OF_ID + id.toString(), FamilyMemberResponse[].class);
+        Family responsFamily = restTemplate.getForObject(uriSearchFamilyOfId + id.toString(), Family.class);
+        FamilyMemberResponse[] listResponseFamily = restTemplate.getForObject(uriSearchFamilyMemberOfId + id.toString(), FamilyMemberResponse[].class);
         return FamilyResponse.builder()
                 .familyName(responsFamily.getFamilyName())
                 .nrOfAdults(responsFamily.getNrOfAdults())
