@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import pl.gajewski.FamilyApp.controller.constant.FamilyAppConstant;
 import pl.gajewski.FamilyApp.dto.*;
@@ -18,13 +20,15 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FamilyAppServiceTest {
-    private static final String URI_CREATE_FAMILY = "http://familyapp-family-database-1:8022/db/createFamily";
-    private static final String URI_CREATE_FAMILY_MEMBER = "http://familyapp-family-member-app-1:8021/createFamilyMember";
-    private static final String URI_SEARCH_FAMILY_OF_ID = "http://familyapp-family-database-1:8022/db/searchFamily/1";
-    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://familyapp-family-member-app-1:8021/searchFamilyMember/1";
+    private static final String URI_CREATE_FAMILY = "http://family-database-app:8022/db/createFamily";
+    private static final String URI_CREATE_FAMILY_MEMBER = "http://family-member-app:8021/createFamilyMember";
+    private static final String URI_SEARCH_FAMILY_OF_ID = "http://family-database-app:8022/db/searchFamily/1";
+    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://family-member-app:8021/searchFamilyMember/1";
 
     @Mock
     RestTemplate restTemplate;
+    @Mock
+    ResponseEntity response;
     @InjectMocks
     FamilyAppService familyAppService;
 
@@ -32,6 +36,7 @@ class FamilyAppServiceTest {
     void shouldCreateFamily() {
         //when
         when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
+        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY_MEMBER), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
         CreateFamilyResponse actual = familyAppService.createFamily(FamilyVO.builder()
                 .id(1L)
                 .familyMemberList(createFamilyMember())
@@ -43,6 +48,25 @@ class FamilyAppServiceTest {
         // then
         assertThat(actual.getInformation()).isEqualTo(FamilyAppConstant.PASS_INFORMATION);
         assertThat(actual.getNumberFamily()).isEqualTo(1L);
+    }
+
+    @Test
+    void shouldNotCreateFamilyMember() {
+        //given
+        List<FamilyMember> list = createFamilyMember();
+        //when
+        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY), Mockito.any(Family.class), Mockito.eq(Long.class))).thenReturn(1L);
+        when(restTemplate.postForObject(Mockito.eq(URI_CREATE_FAMILY_MEMBER), Mockito.any(FamilyMember.class), Mockito.eq(ResponseEntity.class))).thenReturn(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        CreateFamilyResponse actual = familyAppService.createFamily(FamilyVO.builder()
+                .id(1L)
+                .familyMemberList(list)
+                .nrOfinfants(0)
+                .nrOfChildren(0)
+                .nrOfAdults(1)
+                .familyName("NOWAK")
+                .build());
+        // then
+        assertThat(actual.getInformation()).isEqualTo(FamilyAppConstant.FAIL_CREATE_MEMBER_FAMILY + list.get(0).getGivenName());
     }
 
     @Test

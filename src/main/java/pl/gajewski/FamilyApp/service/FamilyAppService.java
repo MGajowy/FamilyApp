@@ -17,10 +17,10 @@ import java.util.UUID;
 @Log4j2
 public class FamilyAppService {
 
-    private static final String URI_CREATE_FAMILY = "http://familyapp-family-database-1:8022/db/createFamily";
-    private static final String URI_CREATE_FAMILY_MEMBER = "http://familyapp-family-member-app-1:8021/createFamilyMember";
-    private static final String URI_SEARCH_FAMILY_OF_ID = "http://familyapp-family-database-1:8022/db/searchFamily/";
-    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://familyapp-family-member-app-1:8021/searchFamilyMember/";
+    private static final String URI_CREATE_FAMILY = "http://family-database-app:8022/db/createFamily";
+    private static final String URI_CREATE_FAMILY_MEMBER = "http://family-member-app:8021/createFamilyMember";
+    private static final String URI_SEARCH_FAMILY_OF_ID = "http://family-database-app:8022/db/searchFamily/";
+    private static final String URI_SEARCH_FAMILY_MEMBER_OF_ID = "http://family-member-app:8021/searchFamilyMember/";
 
     private final RestTemplate restTemplate;
 
@@ -40,8 +40,8 @@ public class FamilyAppService {
             Long familyID = restTemplate.postForObject(URI_CREATE_FAMILY, family, Long.class);
             for (FamilyMember familyMember : request.getFamilyMemberList()) {
                 familyMember.setFamilyId(familyID);
-                ResponseEntity<HttpStatus> response = restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, ResponseEntity.class);
-                if (response.equals(new ResponseEntity<>(HttpStatus.NO_CONTENT))) {
+                ResponseEntity response = restTemplate.postForObject(URI_CREATE_FAMILY_MEMBER, familyMember, ResponseEntity.class);
+                if (response != null && response.equals(new ResponseEntity<>(HttpStatus.NO_CONTENT))) {
                     log.error(FamilyAppConstant.FAIL_CREATE_MEMBER_FAMILY + familyMember.getGivenName() + " " + familyMember.getFamilyName());
                     return CreateFamilyResponse.builder()
                             .numberFamily(null)

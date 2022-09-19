@@ -19,7 +19,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
   family-database:
-#    container_name: family-database
+    container_name: family-database-app
     image: family-database
     ports:
       - "8022:8022"
@@ -29,7 +29,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create
   family-member-app:
-#    container_name: family-member-app
+    container_name: family-member-app
     image: family-member-app
     ports:
       - "8021:8021"
